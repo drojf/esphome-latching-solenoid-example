@@ -1,0 +1,74 @@
+substitutions:
+  name: irrigation-controller-0
+  friendly_name: Irrigation Controller 0
+
+esphome:
+  name: ${name}
+
+esp32:
+  board: esp32-poe
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: !secret api_pw
+
+ota:
+  password: !secret api_pw
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_pw
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: !secret wifi_fallback_ssid
+    password: !secret wifi_pw
+
+captive_portal:
+
+# The button currently toggles the solenoid state
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: 34
+      mode:
+        input: true
+        pullup: false # Board has internall pull-up on this pin
+      inverted: true
+    name: "${friendly_name} Manual Toggle"
+    on_press:
+      - switch.toggle: valve0
+
+switch:
+  - platform: gpio
+    name: "${friendly_name} Relay 0"
+    pin: GPIO13
+    id: relay0
+
+  - platform: gpio
+    name: "${friendly_name} Relay 1"
+    pin: GPIO14
+    id: relay1
+
+  # This controls one latching solenoid using two relays in a H-bridge configuration
+  # Normally it's easier/cheaper to use a DC motor/solenoid driver IC instead of relays
+  - platform: template
+    name: "Irrigation Controller Valve"
+    turn_on_action:
+      - switch.turn_off: relay1
+      - switch.turn_on: relay0
+      - delay: 0.2s
+      - switch.turn_off: relay0
+    turn_off_action:
+      - switch.turn_off: relay0
+      - switch.turn_on: relay1
+      - delay: 0.2s
+      - switch.turn_off: relay1
+    optimistic: true
+    assumed_state: true
+    id: valve0
