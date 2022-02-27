@@ -49,11 +49,13 @@ switch:
     name: "${friendly_name} Relay 0"
     pin: GPIO13
     id: relay0
+    inverted: true
 
   - platform: gpio
     name: "${friendly_name} Relay 1"
     pin: GPIO14
     id: relay1
+    inverted: true
 
   # This controls one latching solenoid using two relays in a H-bridge configuration
   # Normally it's easier/cheaper to use a DC motor/solenoid driver IC instead of relays
