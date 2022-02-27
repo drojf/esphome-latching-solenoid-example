@@ -43,6 +43,8 @@ binary_sensor:
     name: "${friendly_name} Manual Toggle"
     on_press:
       - switch.toggle: valve0
+    filters:
+      - delayed_on: 50ms
 
 switch:
   - platform: gpio
@@ -64,12 +66,12 @@ switch:
     turn_on_action:
       - switch.turn_off: relay1
       - switch.turn_on: relay0
-      - delay: 0.2s
+      - delay: 0.05s
       - switch.turn_off: relay0
     turn_off_action:
       - switch.turn_off: relay0
       - switch.turn_on: relay1
-      - delay: 0.2s
+      - delay: 0.05s
       - switch.turn_off: relay1
     optimistic: true
     assumed_state: true
